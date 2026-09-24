@@ -64,7 +64,7 @@ allowed-tools:
 ```
 
 - Ensure Python 3.11+ is available: `python3 --version`
-- Ensure Node 18+ is available: `node --version`
+- Ensure Node 22.12+ is available (required by Astro 7): `node --version`
 - If `venv` is missing: `python3 -m venv venv && source venv/bin/activate && pip install -r server/requirements.txt`
 
 ---
@@ -134,7 +134,7 @@ cd client && npx playwright test e2e-tests/games.spec.ts
 
 **Symptom**: Tests pass locally but fail in CI (or vice versa).
 
-- **Node version mismatch**: Verify `.nvmrc` or `package.json` `engines` field; CI uses Node 20.
+- **Node version mismatch**: Verify `.nvmrc` or `package.json` `engines` field; CI uses Node 22.
 - **Python version mismatch**: CI uses Python 3.11. Check `server/requirements.txt` for version-pinned packages.
 - **Missing environment variables**: CI sets `API_SERVER_URL`. Locally, defaults to `http://localhost:5100`.
 - **Database state**: CI always starts with a clean database. Locally, stale `data/*.db` files can cause conflicts — delete them and restart.
