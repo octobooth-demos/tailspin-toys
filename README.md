@@ -12,6 +12,10 @@ A script file has been created to launch the site. You can run it by:
 
 Then navigate to the [website](http://localhost:4321) to see the site!
 
+## Languages
+
+The site is available in English, French, and Spanish. Use the language selector in the header to change the current page; your choice is saved for future visits.
+
 ## Game comments
 
 Game detail pages include anonymous comments. Comments are stored with their game and displayed oldest-first with their creation time. Comment text must contain non-whitespace content and is limited to 1,000 characters. The API permits up to five comments per IP address per minute per server process:

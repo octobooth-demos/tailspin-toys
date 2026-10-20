@@ -1,9 +1,11 @@
 <script lang="ts">
-    let { count = 6 }: { count?: number } = $props();
+    import { messages, type Locale } from '../i18n';
+
+    let { count = 6, locale = 'en' }: { count?: number; locale?: Locale } = $props();
 </script>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="status" aria-live="polite" aria-label="Loading games">
-    <span class="sr-only">Loading content, please wait</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="status" aria-live="polite" aria-label={messages[locale].loadingGames}>
+    <span class="sr-only">{messages[locale].loadingContent}</span>
     {#each Array(count) as _, i (i)}
         <div class="bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-slate-700/50" aria-hidden="true">
             <div class="p-6">
