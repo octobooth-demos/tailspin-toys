@@ -4,8 +4,9 @@
     import { API_ENDPOINTS } from '../config/api';
     import ErrorMessage from "./ErrorMessage.svelte";
     import GameComments from "./GameComments.svelte";
+    import { getCategoryName, getGameDescription, messages, type Locale } from '../i18n';
 
-    let { game = undefined, gameId = 0 }: { game?: Game, gameId?: number } = $props();
+    let { game = undefined, gameId = 0, locale = 'en' }: { game?: Game; gameId?: number; locale?: Locale } = $props();
     
     let loading = $state(true);
     let error = $state<string | null>(null);
@@ -26,21 +27,21 @@
                 if (response.ok) {
                     gameData = await response.json();
                 } else {
-                    error = `Failed to fetch game: ${response.status} ${response.statusText}`;
+                    error = messages[locale].gameRequestFailed(`${response.status} ${response.statusText}`);
                 }
             } catch (err) {
-                error = `Error: ${err instanceof Error ? err.message : String(err)}`;
+                error = messages[locale].requestError(err instanceof Error ? err.message : String(err));
             } finally {
                 loading = false;
             }
         } else {
-            error = "No game ID provided";
+            error = messages[locale].noGameId;
             loading = false;
         }
     });
 
     function renderStarRating(rating: number | null): string {
-        if (rating === null) return "Not yet rated";
+        if (rating === null) return messages[locale].notYetRated;
         
         const fullStars = Math.floor(rating);
         const halfStar = rating % 1 >= 0.5;
@@ -51,7 +52,8 @@
 </script>
 
 {#if loading}
-    <div class="animate-pulse bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden p-6">
+    <div class="animate-pulse bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden p-6" role="status" aria-live="polite" aria-label={messages[locale].loadingGame}>
+        <span class="sr-only">{messages[locale].loadingContent}</span>
         <div class="h-8 bg-slate-700 rounded w-1/2 mb-6"></div>
         <div class="h-4 bg-slate-700 rounded w-3/4 mb-3"></div>
         <div class="h-4 bg-slate-700 rounded w-1/2 mb-3"></div>
@@ -78,7 +80,7 @@
             <div class="flex flex-wrap gap-2 mt-4 mb-6">
                 {#if gameData.category}
                     <span class="text-xs font-medium px-2.5 py-0.5 rounded bg-blue-900/60 text-blue-300" data-testid="game-details-category">
-                        {gameData.category.name}
+                        {getCategoryName(gameData.category.name, locale)}
                     </span>
                 {/if}
                 {#if gameData.publisher}
@@ -89,9 +91,9 @@
             </div>
             
             <div class="space-y-4 mt-6">
-                <h2 class="text-lg font-semibold text-slate-200 mb-2">About this game</h2>
+                <h2 class="text-lg font-semibold text-slate-200 mb-2">{messages[locale].aboutThisGame}</h2>
                 <div class="text-slate-400 space-y-4">
-                    <p data-testid="game-details-description">{gameData.description}</p>
+                    <p data-testid="game-details-description">{getGameDescription(gameData.title, gameData.description, locale)}</p>
                 </div>
             </div>
             
@@ -100,14 +102,14 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
                     </svg>
-                    Support This Game
+                    {messages[locale].supportThisGame}
                 </button>
             </div>
         </div>
     </div>
-    <GameComments gameId={gameData.id} />
+    <GameComments gameId={gameData.id} {locale} />
 {:else}
     <div class="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6">
-        <p class="text-slate-400">No game information available</p>
+        <p class="text-slate-400">{messages[locale].noGameInfo}</p>
     </div>
 {/if}

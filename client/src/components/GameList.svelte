@@ -6,7 +6,9 @@
     import LoadingSkeleton from "./LoadingSkeleton.svelte";
     import ErrorMessage from "./ErrorMessage.svelte";
     import EmptyState from "./EmptyState.svelte";
+    import { messages, type Locale } from '../i18n';
 
+    let { locale = 'en' }: { locale?: Locale } = $props();
     let loading = $state(true);
     let error = $state<string | null>(null);
     let games = $state<Game[]>([]);
@@ -19,13 +21,7 @@
         loading = true;
         error = null;
         try {
-            // eslint-disable-next-line svelte/prefer-svelte-reactivity -- local variable, not reactive state
-            const queryParams = new URLSearchParams();
-            queryParams.set('page', String(page));
-
-            const endpoint = `${API_ENDPOINTS.games}?${queryParams.toString()}`;
-
-            const response = await fetch(endpoint);
+            const response = await fetch(`${API_ENDPOINTS.games}?page=${page}`);
             if(response.ok) {
                 const data: PaginatedGamesResponse = await response.json();
                 games = data.games;
@@ -33,42 +29,46 @@
                 totalPages = data.pagination.totalPages;
                 totalGames = data.pagination.total;
             } else {
-                error = `Failed to fetch data: ${response.status} ${response.statusText}`;
+                error = messages[locale].gamesRequestFailed(`${response.status} ${response.statusText}`);
             }
         } catch (err) {
-            error = `Error: ${err instanceof Error ? err.message : String(err)}`;
+            error = messages[locale].requestError(err instanceof Error ? err.message : String(err));
         } finally {
             loading = false;
         }
     };
 
     const goToPage = async (page: number) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        window.history.replaceState(window.history.state, '', url);
         await fetchGames(page);
     };
 
     onMount(() => {
-        fetchGames();
+        const requestedPage = Number(new URLSearchParams(window.location.search).get('page'));
+        fetchGames(Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1);
     });
 </script>
 
 <div>
-    <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Games</h2>
+    <h2 class="text-2xl font-medium mb-6 text-slate-100">{messages[locale].featuredGames}</h2>
     
     {#if loading}
-        <LoadingSkeleton count={6} />
+        <LoadingSkeleton count={6} {locale} />
     {:else if error}
         <ErrorMessage error={error} />
     {:else if games.length === 0}
-        <EmptyState message="No games available at the moment." />
+        <EmptyState message={messages[locale].emptyGames} />
     {:else}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="games-grid">
             {#each games as game (game.id)}
-                <GameCard {game} />
+                <GameCard {game} {locale} />
             {/each}
         </div>
 
         {#if totalPages > 1}
-            <nav class="flex items-center justify-center gap-4 mt-8" aria-label="Pagination" data-testid="pagination">
+            <nav class="flex items-center justify-center gap-4 mt-8" aria-label={messages[locale].pagination} data-testid="pagination">
                 <button
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200
                         {currentPage <= 1
@@ -77,14 +77,13 @@
                     disabled={currentPage <= 1}
                     onclick={() => goToPage(currentPage - 1)}
                     data-testid="pagination-prev"
-                    aria-label="Go to previous page"
+                    aria-label={messages[locale].previousPage}
                 >
-                    ← Previous
+                    {messages[locale].previous}
                 </button>
 
                 <span class="text-sm text-slate-300" data-testid="pagination-info">
-                    Page {currentPage} of {totalPages}
-                    <span class="text-slate-400">({totalGames} games)</span>
+                    {messages[locale].pageSummary(currentPage, totalPages, totalGames)}
                 </span>
 
                 <button
@@ -95,9 +94,9 @@
                     disabled={currentPage >= totalPages}
                     onclick={() => goToPage(currentPage + 1)}
                     data-testid="pagination-next"
-                    aria-label="Go to next page"
+                    aria-label={messages[locale].nextPage}
                 >
-                    Next →
+                    {messages[locale].next}
                 </button>
             </nav>
         {/if}
