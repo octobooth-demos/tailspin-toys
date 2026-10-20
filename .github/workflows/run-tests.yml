@@ -31,6 +31,13 @@ jobs:
       - name: Run Flask unit tests
         run: bash ./scripts/run-server-tests.sh
 
+      - name: Upload coverage artifact
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-python
+          path: server/coverage.xml
+
   # Lint the frontend code with ESLint
   frontend-lint:
     runs-on: ubuntu-latest
@@ -92,3 +99,48 @@ jobs:
           name: playwright-report
           path: client/playwright-report/
           retention-days: 30
+
+      - name: Upload coverage artifact
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-svelte
+          path: client/coverage/cobertura-coverage.xml
+
+  upload-coverage-python:
+    needs: backend-tests
+    if: ${{ !cancelled() && needs.backend-tests.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      code-quality: write
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-report-python
+
+      - uses: actions/upload-code-coverage@v1
+        with:
+          file: coverage.xml
+          language: Python
+          label: code-coverage-agent
+
+  upload-coverage-svelte:
+    needs: frontend-tests
+    if: ${{ !cancelled() && needs.frontend-tests.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      code-quality: write
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-report-svelte
+
+      - uses: actions/upload-code-coverage@v1
+        with:
+          file: cobertura-coverage.xml
+          language: Svelte
+          label: code-coverage-agent

@@ -3,6 +3,10 @@
 # build output
 dist/
 
+# coverage reports (client E2E Istanbul/nyc coverage)
+client/coverage/
+client/.nyc_output/
+
 # generated types
 .astro/
 
@@ -38,6 +42,7 @@ instance/
 flask_session/
 .coverage
 htmlcov/
+server/coverage.xml
 
 # dotnet
 *.swp

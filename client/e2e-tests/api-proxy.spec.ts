@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './coverage-fixtures';
 
 test.describe('API Proxy', () => {
   test('should proxy GET /api/games and return paginated response', async ({ request }) => {

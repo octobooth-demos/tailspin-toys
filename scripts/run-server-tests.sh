@@ -19,8 +19,17 @@ if [[ "$VIRTUAL_ENV" == "" ]]; then
     source "$PROJECT_ROOT/venv/bin/activate" || . "$PROJECT_ROOT/venv/bin/activate"
 fi
 
-# Run server tests
-cd "$PROJECT_ROOT/server" || exit 1
-echo "Running server tests..."
+# Ensure coverage is installed (idempotent, fast if already present)
+pip install -q -r "$PROJECT_ROOT/server/requirements-dev.txt"
 
-python3 -m unittest discover -s tests -p "*.py"
+# Run server tests with coverage
+cd "$PROJECT_ROOT/server" || exit 1
+echo "Running server tests with coverage..."
+
+coverage run -m unittest discover -s tests -p "*.py"
+TEST_EXIT_CODE=$?
+
+# Generate the Cobertura-compatible XML coverage report
+coverage xml
+
+exit $TEST_EXIT_CODE

@@ -1,0 +1,7 @@
+{
+  "all": false,
+  "temp-dir": ".nyc_output",
+  "report-dir": "coverage",
+  "reporter": ["cobertura"],
+  "extension": [".js", ".ts", ".svelte", ".astro"]
+}

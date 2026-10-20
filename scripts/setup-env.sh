@@ -17,6 +17,7 @@ source venv/bin/activate || . venv/bin/activate
 
 echo "Installing Python dependencies..."
 pip install -r server/requirements.txt
+pip install -r server/requirements-dev.txt
 
 echo "Installing client dependencies..."
 cd client || exit 1

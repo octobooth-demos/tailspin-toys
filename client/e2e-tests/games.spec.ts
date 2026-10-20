@@ -1,4 +1,4 @@
-import { test, expect, type Response } from '@playwright/test';
+import { test, expect, type Response } from './coverage-fixtures';
 
 test.describe('Game Listing and Navigation', () => {
   test('should display games with titles on index page', async ({ page }) => {
