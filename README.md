@@ -12,6 +12,13 @@ A script file has been created to launch the site. You can run it by:
 
 Then navigate to the [website](http://localhost:4321) to see the site!
 
+## Game comments
+
+Game detail pages include anonymous comments. Comments are stored with their game and displayed oldest-first with their creation time. Comment text must contain non-whitespace content and is limited to 1,000 characters. The API permits up to five comments per IP address per minute per server process:
+
+- `GET /api/games/<game_id>/comments` lists comments for a game.
+- `POST /api/games/<game_id>/comments` creates a comment from a JSON body such as `{"text":"I like this game!"}`.
+
 ## Linting
 
 The frontend uses ESLint to enforce code quality across TypeScript, Astro, and Svelte files. Run it with:

@@ -18,6 +18,12 @@ class Game(BaseModel):
     # One-to-many relationships (many games belong to one category/publisher)
     category = relationship("Category", back_populates="games")
     publisher = relationship("Publisher", back_populates="games")
+    comments = relationship(
+        "Comment",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        order_by="Comment.created_at, Comment.id",
+    )
     
     @validates('title')
     def validate_name(self, key, name):

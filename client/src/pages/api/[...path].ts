@@ -9,13 +9,18 @@ export const ALL: APIRoute = async ({ params, request }) => {
   const targetUrl = `${API_SERVER_URL}/api/${params.path}${url.search}`;
 
   try {
-    const response = await fetch(targetUrl, {
+    const requestInit: RequestInit & { duplex?: 'half' } = {
       method: request.method,
       headers: request.headers,
       body: request.method !== 'GET' && request.method !== 'HEAD'
         ? request.body
         : undefined,
-    });
+    };
+    if (requestInit.body) {
+      requestInit.duplex = 'half';
+    }
+
+    const response = await fetch(targetUrl, requestInit);
 
     return new Response(response.body, {
       status: response.status,

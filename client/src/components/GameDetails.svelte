@@ -3,6 +3,7 @@
     import type { Game } from '../types/game';
     import { API_ENDPOINTS } from '../config/api';
     import ErrorMessage from "./ErrorMessage.svelte";
+    import GameComments from "./GameComments.svelte";
 
     let { game = undefined, gameId = 0 }: { game?: Game, gameId?: number } = $props();
     
@@ -104,6 +105,7 @@
             </div>
         </div>
     </div>
+    <GameComments gameId={gameData.id} />
 {:else}
     <div class="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6">
         <p class="text-slate-400">No game information available</p>

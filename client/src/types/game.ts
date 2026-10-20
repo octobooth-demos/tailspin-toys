@@ -48,3 +48,14 @@ export interface PaginatedGamesResponse {
     games: Game[];
     pagination: Pagination;
 }
+
+/**
+ * Represents a comment returned by the game comments API.
+ */
+export interface GameComment {
+    id: number;
+    gameId: number;
+    text: string;
+    author: string;
+    createdAt: string;
+}
