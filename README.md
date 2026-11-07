@@ -44,7 +44,7 @@ The **QA Reviewer** (`.github/agents/qa-reviewer.md`) is a pre-PR quality gate. 
 - Verify all acceptance criteria have been implemented
 - Audit test coverage and fill any gaps
 - Run the full verification suite (unit tests, lint, E2E tests)
-- Validate UI changes in the browser via Playwright MCP
+- Validate UI changes in the browser via Playwright MCP (VS Code and Codespaces, which load `.vscode/mcp.json`)
 - Produce a go/no-go report
 
 ### test-runner Skill
@@ -62,6 +62,8 @@ This project is licensed under the terms of the MIT open source license. Please 
 ## Maintainers 
 
 You can find the list of maintainers in [CODEOWNERS](./.github/CODEOWNERS).
+
+The Playwright MCP server is only in `.vscode/mcp.json`, not `.mcp.json`, because booth machines can't reach the npm registry and an `npx` server there stalls local Copilot sessions.
 
 ## Support
 
